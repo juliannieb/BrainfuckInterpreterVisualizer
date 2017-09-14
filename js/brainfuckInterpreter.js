@@ -39,9 +39,19 @@ function decrementValue() {
 function inputCommand(source) {
     if (source == InputSourceEnum.INPUT_TEXT_BOX) {
         alert("Hola");
+        // TODO: handle and save input
     }
     else if (source == InputSourceEnum.KEYBOARD) {
         alert("Adios");
+        // TODO: handle and save input
+    }
+}
+
+function outputCommand() {
+    var value = memory[currentIdx].value;
+    if (value >= 0 && value <= 255) {
+        alert(String.fromCharCode(value));
+        // TODO: handle where to print output
     }
 }
 
@@ -69,3 +79,4 @@ decrementPointer();
 alert(memoryToString());
 alert(currentIdx);
 inputCommand(InputSourceEnum.INPUT_TEXT_BOX);
+outputCommand();
