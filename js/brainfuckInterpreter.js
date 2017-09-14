@@ -8,7 +8,7 @@ function init() {
 }
 
 function createCell() {
-    return new MemoryCell(65);
+    return new MemoryCell(0);
 }
 
 function incrementPointer() {
@@ -38,11 +38,9 @@ function decrementValue() {
 
 function inputCommand(source) {
     if (source == InputSourceEnum.INPUT_TEXT_BOX) {
-        alert("Hola");
         // TODO: handle and save input
     }
     else if (source == InputSourceEnum.KEYBOARD) {
-        alert("Adios");
         // TODO: handle and save input
     }
 }
@@ -68,24 +66,28 @@ function memoryToString() {
     return s;
 }
 
-$( document ).ready(function(){
+function testCase() {
     init();
-    alert(memoryToString());
+    // alert(memoryToString());
     incrementPointer();
     incrementPointer();
     incrementValue();
-    alert(memoryToString());
+    // alert(memoryToString());
     decrementPointer();
     incrementValue();
     incrementValue();
     decrementPointer();
     decrementPointer();
-    alert(memoryToString());
-    alert(currentIdx);
+    // alert(memoryToString());
+    // alert(currentIdx);
     inputCommand(InputSourceEnum.INPUT_TEXT_BOX);
     outputCommand();
     incrementPointer();
     outputCommand();
     incrementPointer();
     outputCommand();
+}
+
+$( document ).ready(function(){
+    testCase();
 })
