@@ -25,11 +25,15 @@ function decrementPointer() {
 }
 
 function incrementValue() {
-    (memory[currentIdx].value)++;
+    if (memory[currentIdx].value < 255) {
+        (memory[currentIdx].value)++;
+    }
 }
 
 function decrementValue() {
-    (memory[currentIdx].value)--;
+    if (memory.currentIdx.value > 0) {
+        (memory[currentIdx].value)--;
+    }
 }
 
 function memoryToString() {
