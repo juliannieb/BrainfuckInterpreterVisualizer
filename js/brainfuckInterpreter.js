@@ -8,7 +8,7 @@ function init() {
 }
 
 function createCell() {
-    return new MemoryCell(0);
+    return new MemoryCell(65);
 }
 
 function incrementPointer() {
@@ -50,8 +50,11 @@ function inputCommand(source) {
 function outputCommand() {
     var value = memory[currentIdx].value;
     if (value >= 0 && value <= 255) {
-        alert(String.fromCharCode(value));
-        // TODO: handle where to print output
+        var valChar = String.fromCharCode(value);
+        var outputTextBox = document.getElementById("outputTextArea");
+        var outputSoFar = outputTextBox.value;
+        var newOutput = outputSoFar + valChar;
+        outputTextBox.value = newOutput;
     }
 }
 
@@ -65,18 +68,24 @@ function memoryToString() {
     return s;
 }
 
-init();
-alert(memoryToString());
-incrementPointer();
-incrementPointer();
-incrementValue();
-alert(memoryToString());
-decrementPointer();
-incrementValue();
-incrementValue();
-decrementPointer();
-decrementPointer();
-alert(memoryToString());
-alert(currentIdx);
-inputCommand(InputSourceEnum.INPUT_TEXT_BOX);
-outputCommand();
+$( document ).ready(function(){
+    init();
+    alert(memoryToString());
+    incrementPointer();
+    incrementPointer();
+    incrementValue();
+    alert(memoryToString());
+    decrementPointer();
+    incrementValue();
+    incrementValue();
+    decrementPointer();
+    decrementPointer();
+    alert(memoryToString());
+    alert(currentIdx);
+    inputCommand(InputSourceEnum.INPUT_TEXT_BOX);
+    outputCommand();
+    incrementPointer();
+    outputCommand();
+    incrementPointer();
+    outputCommand();
+})
