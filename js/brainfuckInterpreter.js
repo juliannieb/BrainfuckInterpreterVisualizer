@@ -3,6 +3,7 @@ var currentIdx = 0;
 
 function init() {
     memory = [];
+    currentIdx = 0;
     memory.push(createCell());
 }
 
@@ -12,10 +13,15 @@ function createCell() {
 
 function incrementPointer() {
     currentIdx++;
+    while (currentIdx >= memory.length) {
+        memory.push(createCell());
+    }
 }
 
 function decrementPointer() {
-    currentIdx--;
+    if (currentIdx > 0) {
+        currentIdx--;
+    }
 }
 
 function incrementValue() {
@@ -38,3 +44,14 @@ function memoryToString() {
 
 init();
 alert(memoryToString());
+incrementPointer();
+incrementPointer();
+incrementValue();
+alert(memoryToString());
+decrementPointer();
+incrementValue();
+incrementValue();
+decrementPointer();
+decrementPointer();
+alert(memoryToString());
+alert(currentIdx);
