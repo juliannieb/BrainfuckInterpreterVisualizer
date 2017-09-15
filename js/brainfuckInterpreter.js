@@ -122,7 +122,7 @@ function endLoop() {
 function runCommand(command, runningMethod) {
     if (supportedCommands.indexOf(command) == -1 && ignoredCommands.indexOf(command) == -1) {
         // TODO: Handle wrong command error
-        alert("Invalid command " + command + " = " + command.charCodeAt(0));
+        alert("Invalid command " + command + " = " + command.charCodeAt(0) + " at idx: " + currentCommandIdx);
     }
     if (loopStartIdxs.length == 0 || loopStartIdxs[loopStartIdxs.length - 1].valid) {
         if (command == '>') {
@@ -153,7 +153,7 @@ function runCommand(command, runningMethod) {
     }
 }
 
-function nextCommand(runningMethod, command) {
+function nextCommand(runningMethod) {
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         if (currentCommandIdx >= commands.length) {
             finished = true;
@@ -165,8 +165,12 @@ function nextCommand(runningMethod, command) {
         // TODO: handle visualization or not
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
-        // TODO: handle this running method
-        
+        if (currentCommandIdx >= commands.length) {
+            return;
+        }
+        let nextCommand = commands[currentCommandIdx];
+        runCommand(nextCommand, runningMethod);
+        currentCommandIdx++;
     }
 }
 
@@ -183,6 +187,7 @@ function runCode(runningMethod) {
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
         keyPressedListenerActive = true;
+        commands = "";
     }
 }
 
@@ -194,8 +199,12 @@ function addOnKeyPressedListener() {
                 keyPressedListenerActive = false;
                 return;
             }
-            alert(String.fromCharCode(event.which));
-            nextCommand(RunningMethodEnum.VISUALIZE, String.fromCharCode(event.which));
+            // alert(String.fromCharCode(event.which));
+            commands = commands + String.fromCharCode(event.which);
+            nextCommand(RunningMethodEnum.VISUALIZE);
+            while (currentCommandIdx < commands.length) {
+                nextCommand(RunningMethodEnum.VISUALIZE);
+            }
         }
     });
 }
