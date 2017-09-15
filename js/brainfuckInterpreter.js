@@ -6,6 +6,7 @@ var currentCommandIdx = 0;
 var currentInputIdx = 0;
 var loopStartIdxs = [];
 var finished = false;
+var keyPressedListenerActive = false;
 
 function initInterpreter() {
     memory = [];
@@ -19,8 +20,14 @@ function initInterpreter() {
     memory.push(createCell());
 }
 
-function initGUI() {
+function initGUI(runningMethod) {
     document.getElementById("outputTextArea").value = "";
+    if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+        keyPressedListenerActive = false;
+    }
+    else if (runningMethod == RunningMethodEnum.VISUALIZE) {
+        keyPressedListenerActive = true;
+    }
 }
 
 function createCell() {
@@ -146,7 +153,7 @@ function runCommand(command, runningMethod) {
     }
 }
 
-function nextCommand(runningMethod) {
+function nextCommand(runningMethod, command) {
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         if (currentCommandIdx >= commands.length) {
             finished = true;
@@ -159,13 +166,15 @@ function nextCommand(runningMethod) {
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
         // TODO: handle this running method
+        
     }
 }
 
 function runCode(runningMethod) {
     initInterpreter();
-    initGUI();
+    initGUI(runningMethod);
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+        keyPressedListenerActive = false;
         commands = document.getElementById("codeTextArea").value;
         input = document.getElementById("inputTextArea").value;
         while(!finished) {
@@ -173,10 +182,22 @@ function runCode(runningMethod) {
         }
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
-        while(!finished) {
-            nextCommand(runningMethod);
-        }
+        keyPressedListenerActive = true;
     }
+}
+
+function addOnKeyPressedListener() {
+    $(document).keypress(function(event){
+        if (keyPressedListenerActive) {
+            event.preventDefault();
+            if (event.keyCode == ENTER_KEY_CODE) {
+                keyPressedListenerActive = false;
+                return;
+            }
+            alert(String.fromCharCode(event.which));
+            nextCommand(RunningMethodEnum.VISUALIZE, String.fromCharCode(event.which));
+        }
+    });
 }
 
 function memoryToString() {
@@ -203,4 +224,5 @@ $( document ).ready(function(){
     document.getElementById("btnRun").onclick = function() { runCode(RunningMethodEnum.RUN); };
     document.getElementById("btnRunVisualize").onclick = function() { runCode(RunningMethodEnum.RUN_VISUALIZE); };
     document.getElementById("btnVisualize").onclick = function() { runCode(RunningMethodEnum.VISUALIZE); };
+    addOnKeyPressedListener();
 })
