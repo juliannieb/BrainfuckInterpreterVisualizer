@@ -1,5 +1,5 @@
 var memory = [];
-var currentIdx = 0;
+var currentCellIdx = 0;
 var commands = "";
 var currentCommandIdx = 0;
 var loopStartIdxs = [];
@@ -7,7 +7,7 @@ var finished = false;
 
 function init() {
     memory = [];
-    currentIdx = 0;
+    currentCellIdx = 0;
     commands = "";
     currentCommandIdx = 0;
     loopStartIdxs = [];
@@ -20,27 +20,27 @@ function createCell() {
 }
 
 function incrementPointer() {
-    currentIdx++;
-    while (currentIdx >= memory.length) {
+    currentCellIdx++;
+    while (currentCellIdx >= memory.length) {
         memory.push(createCell());
     }
 }
 
 function decrementPointer() {
-    if (currentIdx > 0) {
-        currentIdx--;
+    if (currentCellIdx > 0) {
+        currentCellIdx--;
     }
 }
 
 function incrementValue() {
-    if (memory[currentIdx].value < 255) {
-        (memory[currentIdx].value)++;
+    if (memory[currentCellIdx].value < 255) {
+        (memory[currentCellIdx].value)++;
     }
 }
 
 function decrementValue() {
-    if (memory[currentIdx].value > 0) {
-        (memory[currentIdx].value)--;
+    if (memory[currentCellIdx].value > 0) {
+        (memory[currentCellIdx].value)--;
     }
 }
 
@@ -54,7 +54,7 @@ function inputCommand(runningMethod) {
 }
 
 function outputCommand() {
-    var value = memory[currentIdx].value;
+    var value = memory[currentCellIdx].value;
     if (value >= 0 && value <= 255) {
         var valChar = String.fromCharCode(value);
         var outputTextBox = document.getElementById("outputTextArea");
@@ -65,7 +65,7 @@ function outputCommand() {
 }
 
 function startLoop() {
-    var value = memory[currentIdx].value;
+    var value = memory[currentCellIdx].value;
     if (value != 0) {
         loopStartIdxs.push(new Loop(currentCommandIdx, true));
     }
@@ -79,7 +79,7 @@ function endLoop() {
         // TODO: Handle syntax error
         return;
     }
-    var value = memory[currentIdx].value;
+    var value = memory[currentCellIdx].value;
     if (value != 0) {
         currentCommandIdx = loopStartIdxs[loopStartIdxs.length - 1].idx;
     }
