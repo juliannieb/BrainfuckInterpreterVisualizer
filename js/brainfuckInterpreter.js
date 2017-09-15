@@ -1,7 +1,9 @@
 var memory = [];
 var currentCellIdx = 0;
 var commands = "";
+var input = "";
 var currentCommandIdx = 0;
+var currentInputIdx = 0;
 var loopStartIdxs = [];
 var finished = false;
 
@@ -9,7 +11,9 @@ function init() {
     memory = [];
     currentCellIdx = 0;
     commands = "";
+    input = "";
     currentCommandIdx = 0;
+    currentInputIdx = 0;
     loopStartIdxs = [];
     finished = false;
     memory.push(createCell());
@@ -46,7 +50,13 @@ function decrementValue() {
 
 function inputCommand(runningMethod) {
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
-        // TODO: handle and save input
+        if (currentInputIdx >= input.length) {
+            alert("Error: Input out of bounds");
+            return;
+        }
+        inputByte = input[currentInputIdx];
+        memory[currentCellIdx].value = inputByte.charCodeAt(0);
+        currentInputIdx++;
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
         // TODO: handle and save input
@@ -143,6 +153,7 @@ function runCode(runningMethod) {
     init();
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         commands = document.getElementById("codeTextArea").value;
+        input = document.getElementById("inputTextArea").value;
         while(!finished) {
             nextCommand(runningMethod);
         }
