@@ -129,8 +129,7 @@ function nextCommand(runningMethod) {
             return;
         }
         let nextCommand = commands[currentCommandIdx];
-        runCommand(nextCommand);
-        //alert(memoryToString());
+        runCommand(nextCommand, runningMethod);
         currentCommandIdx++;
         // TODO: handle visualization or not
     }
@@ -143,8 +142,9 @@ function runCode(runningMethod) {
     init();
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         commands = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
-        //commands = "++++++[>++++++++++<-]>+++++."
-        //commands = "+++[>+++[-]<-]"
+        // commands = "++++++[>++++++++++<-]>+++++."
+        // commands = "+++[>+++[-]<-]"
+        // commands = ",>,<[>[>+>+<<-]>>[-<<+>>]<<<-]>>."
         while(!finished) {
             nextCommand(runningMethod);
         }
