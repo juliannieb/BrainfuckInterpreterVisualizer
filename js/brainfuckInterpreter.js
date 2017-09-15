@@ -61,6 +61,7 @@ function outputCommand() {
         var outputSoFar = outputTextBox.value;
         var newOutput = outputSoFar + valChar;
         outputTextBox.value = newOutput;
+        Materialize.updateTextFields();
     }
 }
 
