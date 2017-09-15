@@ -1,9 +1,13 @@
 var memory = [];
 var currentIdx = 0;
+var currentInstructionIdx = 0;
+var loopStartIdxs = [];
 
 function init() {
     memory = [];
     currentIdx = 0;
+    currentInstructionIdx = 0;
+    loopStartIdxs = [];
     memory.push(createCell());
 }
 
@@ -53,6 +57,27 @@ function outputCommand() {
         var outputSoFar = outputTextBox.value;
         var newOutput = outputSoFar + valChar;
         outputTextBox.value = newOutput;
+    }
+}
+
+function initLoop() {
+    var value = memory[currentIdx].value;
+    if (value == 0) {
+        loopStartIdxs.push(currentInstructionIdx);
+    }
+}
+
+function endLoop() {
+    if (loopStartIdxs.length == 0) {
+        // TODO: Handle syntax error
+        return;
+    }
+    var value = memory[currentIdx].value;
+    if (value != 0) {
+        currentInstructionIdx = loopStartIdxs[loopStartIdxs.length - 1];
+    }
+    else {
+        loopStartIdxs.pop();
     }
 }
 
