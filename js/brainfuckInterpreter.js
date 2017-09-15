@@ -12,7 +12,7 @@ function init() {
 }
 
 function createCell() {
-    return new MemoryCell(0);
+    return new MemoryCell(65);
 }
 
 function incrementPointer() {
@@ -60,7 +60,7 @@ function outputCommand() {
     }
 }
 
-function initLoop() {
+function startLoop() {
     var value = memory[currentIdx].value;
     if (value == 0) {
         loopStartIdxs.push(currentInstructionIdx);
@@ -81,6 +81,37 @@ function endLoop() {
     }
 }
 
+function runCommand(command, source) {
+    if (supportedCommands.indexOf(command) == -1) {
+        // TODO: Handle wrong command error
+        alert("Invalid command");
+    }
+    if (command == '>') {
+        incrementPointer();
+    }
+    else if (command == '<') {
+        decrementPointer();
+    }
+    else if (command == '+') {
+        incrementValue();
+    }
+    else if (command == '-') {
+        decrementValue();
+    }
+    else if (command == ',') {
+        inputCommand(source);
+    }
+    else if (command == '.') {
+        outputCommand();
+    }
+    else if (command == '[') {
+        startLoop();
+    }
+    else if (command == ']') {
+        endLoop();
+    }
+}
+
 function memoryToString() {
     s = "";
     s += "[";
@@ -93,24 +124,21 @@ function memoryToString() {
 
 function testCase() {
     init();
-    // alert(memoryToString());
-    incrementPointer();
-    incrementPointer();
-    incrementValue();
-    // alert(memoryToString());
-    decrementPointer();
-    incrementValue();
-    incrementValue();
-    decrementPointer();
-    decrementPointer();
-    // alert(memoryToString());
-    // alert(currentIdx);
-    inputCommand(InputSourceEnum.INPUT_TEXT_BOX);
-    outputCommand();
-    incrementPointer();
-    outputCommand();
-    incrementPointer();
-    outputCommand();
+    let source = InputSourceEnum.INPUT_TEXT_BOX;
+    runCommand('>', source);
+    runCommand('>', source);
+    runCommand('+', source);
+    runCommand('<', source);
+    runCommand('+', source);
+    runCommand('+', source);
+    runCommand('<', source);
+    runCommand('<', source);
+    runCommand(',', source);
+    runCommand('.', source);
+    runCommand('>', source);
+    runCommand('.', source);
+    runCommand('>', source);
+    runCommand('.', source);
 }
 
 $( document ).ready(function(){
