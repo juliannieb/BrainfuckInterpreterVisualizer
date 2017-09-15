@@ -7,7 +7,7 @@ var currentInputIdx = 0;
 var loopStartIdxs = [];
 var finished = false;
 
-function init() {
+function initInterpreter() {
     memory = [];
     currentCellIdx = 0;
     commands = "";
@@ -17,6 +17,10 @@ function init() {
     loopStartIdxs = [];
     finished = false;
     memory.push(createCell());
+}
+
+function initGUI() {
+    document.getElementById("outputTextArea").value = "";
 }
 
 function createCell() {
@@ -150,7 +154,8 @@ function nextCommand(runningMethod) {
 }
 
 function runCode(runningMethod) {
-    init();
+    initInterpreter();
+    initGUI();
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         commands = document.getElementById("codeTextArea").value;
         input = document.getElementById("inputTextArea").value;
