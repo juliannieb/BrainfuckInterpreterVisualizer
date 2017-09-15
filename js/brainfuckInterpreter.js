@@ -67,10 +67,10 @@ function outputCommand() {
 function startLoop() {
     var value = memory[currentIdx].value;
     if (value != 0) {
-        loopStartIdxs.push([currentCommandIdx, true]);
+        loopStartIdxs.push(new Loop(currentCommandIdx, true));
     }
     else {
-        loopStartIdxs.push([currentCommandIdx, false]);
+        loopStartIdxs.push(new Loop(currentCommandIdx, false));
     }
 }
 
@@ -81,7 +81,7 @@ function endLoop() {
     }
     var value = memory[currentIdx].value;
     if (value != 0) {
-        currentCommandIdx = loopStartIdxs[loopStartIdxs.length - 1][0] - 1;
+        currentCommandIdx = loopStartIdxs[loopStartIdxs.length - 1].idx;
     }
     else {
         loopStartIdxs.pop();
@@ -91,9 +91,9 @@ function endLoop() {
 function runCommand(command, runningMethod) {
     if (supportedCommands.indexOf(command) == -1) {
         // TODO: Handle wrong command error
-        alert("Invalid command");
+        alert("Invalid command " + command);
     }
-    if (loopStartIdxs.length == 0 || loopStartIdxs[loopStartIdxs.length - 1][1]) {
+    if (loopStartIdxs.length == 0 || loopStartIdxs[loopStartIdxs.length - 1].valid) {
         if (command == '>') {
             incrementPointer();
         }
@@ -143,6 +143,8 @@ function runCode(runningMethod) {
     init();
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         commands = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
+        //commands = "++++++[>++++++++++<-]>+++++."
+        //commands = "+++[>+++[-]<-]"
         while(!finished) {
             nextCommand(runningMethod);
         }
@@ -157,6 +159,16 @@ function memoryToString() {
     s += "[";
     for(i = 0; i < memory.length; i++) {
         s += memory[i].value + (i == memory.length - 1 ? "" : ",");
+    }
+    s += "]";
+    return s;
+}
+
+function loopsToString() {
+    s = "";
+    s += "[";
+    for(i = 0; i < loopStartIdxs.length; i++) {
+        s += "(" + loopStartIdxs[i].idx + ", " + loopStartIdxs[i].valid + ")" + (i == loopStartIdxs.length - 1 ? "" : ",");
     }
     s += "]";
     return s;
