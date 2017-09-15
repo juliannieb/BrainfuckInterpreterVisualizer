@@ -1,18 +1,22 @@
 var memory = [];
 var currentIdx = 0;
-var currentInstructionIdx = 0;
+var commands = "";
+var currentCommandIdx = 0;
 var loopStartIdxs = [];
+var finished = false;
 
 function init() {
     memory = [];
     currentIdx = 0;
-    currentInstructionIdx = 0;
+    commands = "";
+    currentCommandIdx = 0;
     loopStartIdxs = [];
+    finished = false;
     memory.push(createCell());
 }
 
 function createCell() {
-    return new MemoryCell(65);
+    return new MemoryCell(0);
 }
 
 function incrementPointer() {
@@ -35,16 +39,16 @@ function incrementValue() {
 }
 
 function decrementValue() {
-    if (memory.currentIdx.value > 0) {
+    if (memory[currentIdx].value > 0) {
         (memory[currentIdx].value)--;
     }
 }
 
-function inputCommand(source) {
-    if (source == InputSourceEnum.INPUT_TEXT_BOX) {
+function inputCommand(runningMethod) {
+    if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         // TODO: handle and save input
     }
-    else if (source == InputSourceEnum.KEYBOARD) {
+    else if (runningMethod == RunningMethodEnum.VISUALIZE) {
         // TODO: handle and save input
     }
 }
@@ -62,8 +66,11 @@ function outputCommand() {
 
 function startLoop() {
     var value = memory[currentIdx].value;
-    if (value == 0) {
-        loopStartIdxs.push(currentInstructionIdx);
+    if (value != 0) {
+        loopStartIdxs.push([currentCommandIdx, true]);
+    }
+    else {
+        loopStartIdxs.push([currentCommandIdx, false]);
     }
 }
 
@@ -74,41 +81,74 @@ function endLoop() {
     }
     var value = memory[currentIdx].value;
     if (value != 0) {
-        currentInstructionIdx = loopStartIdxs[loopStartIdxs.length - 1];
+        currentCommandIdx = loopStartIdxs[loopStartIdxs.length - 1][0] - 1;
     }
     else {
         loopStartIdxs.pop();
     }
 }
 
-function runCommand(command, source) {
+function runCommand(command, runningMethod) {
     if (supportedCommands.indexOf(command) == -1) {
         // TODO: Handle wrong command error
         alert("Invalid command");
     }
-    if (command == '>') {
-        incrementPointer();
+    if (loopStartIdxs.length == 0 || loopStartIdxs[loopStartIdxs.length - 1][1]) {
+        if (command == '>') {
+            incrementPointer();
+        }
+        else if (command == '<') {
+            decrementPointer();
+        }
+        else if (command == '+') {
+            incrementValue();
+        }
+        else if (command == '-') {
+            decrementValue();
+        }
+        else if (command == ',') {
+            inputCommand(runningMethod);
+        }
+        else if (command == '.') {
+            outputCommand();
+        }
     }
-    else if (command == '<') {
-        decrementPointer();
-    }
-    else if (command == '+') {
-        incrementValue();
-    }
-    else if (command == '-') {
-        decrementValue();
-    }
-    else if (command == ',') {
-        inputCommand(source);
-    }
-    else if (command == '.') {
-        outputCommand();
-    }
-    else if (command == '[') {
+
+    if (command == '[') {
         startLoop();
     }
     else if (command == ']') {
         endLoop();
+    }
+}
+
+function nextCommand(runningMethod) {
+    if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+        if (currentCommandIdx >= commands.length) {
+            finished = true;
+            return;
+        }
+        let nextCommand = commands[currentCommandIdx];
+        runCommand(nextCommand);
+        //alert(memoryToString());
+        currentCommandIdx++;
+        // TODO: handle visualization or not
+    }
+    else if (runningMethod == RunningMethodEnum.VISUALIZE) {
+        // TODO: handle this running method
+    }
+}
+
+function runCode(runningMethod) {
+    init();
+    if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+        commands = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
+        while(!finished) {
+            nextCommand(runningMethod);
+        }
+    }
+    else if (runningMethod == RunningMethodEnum.VISUALIZE) {
+        // TODO: handle this running method
     }
 }
 
@@ -142,5 +182,5 @@ function testCase() {
 }
 
 $( document ).ready(function(){
-    testCase();
+    runCode(RunningMethodEnum.RUN);
 })

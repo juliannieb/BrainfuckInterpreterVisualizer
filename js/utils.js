@@ -1,6 +1,7 @@
 supportedCommands = ['>', '<', '+', '-', ',', '.', '[', ']'];
 
-InputSourceEnum = {
-    INPUT_TEXT_BOX : 0,
-    KEYBOARD : 1
+RunningMethodEnum = {
+    RUN : 0,
+    RUN_VISUALIZE: 1,
+    VISUALIZE: 2
 }
