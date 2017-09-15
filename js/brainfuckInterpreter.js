@@ -76,6 +76,7 @@ function outputCommand() {
         var newOutput = outputSoFar + valChar;
         outputTextBox.value = newOutput;
         Materialize.updateTextFields();
+        $('#outputTextArea').trigger('autoresize');
     }
 }
 
