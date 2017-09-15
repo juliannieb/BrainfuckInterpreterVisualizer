@@ -89,9 +89,9 @@ function endLoop() {
 }
 
 function runCommand(command, runningMethod) {
-    if (supportedCommands.indexOf(command) == -1) {
+    if (supportedCommands.indexOf(command) == -1 && ignoredCommands.indexOf(command) == -1) {
         // TODO: Handle wrong command error
-        alert("Invalid command " + command);
+        alert("Invalid command " + command + " = " + command.charCodeAt(0));
     }
     if (loopStartIdxs.length == 0 || loopStartIdxs[loopStartIdxs.length - 1].valid) {
         if (command == '>') {
@@ -141,10 +141,7 @@ function nextCommand(runningMethod) {
 function runCode(runningMethod) {
     init();
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
-        commands = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
-        // commands = "++++++[>++++++++++<-]>+++++."
-        // commands = "+++[>+++[-]<-]"
-        // commands = ",>,<[>[>+>+<<-]>>[-<<+>>]<<<-]>>."
+        commands = document.getElementById("codeTextArea").value;
         while(!finished) {
             nextCommand(runningMethod);
         }
@@ -174,25 +171,6 @@ function loopsToString() {
     return s;
 }
 
-function testCase() {
-    init();
-    let source = InputSourceEnum.INPUT_TEXT_BOX;
-    runCommand('>', source);
-    runCommand('>', source);
-    runCommand('+', source);
-    runCommand('<', source);
-    runCommand('+', source);
-    runCommand('+', source);
-    runCommand('<', source);
-    runCommand('<', source);
-    runCommand(',', source);
-    runCommand('.', source);
-    runCommand('>', source);
-    runCommand('.', source);
-    runCommand('>', source);
-    runCommand('.', source);
-}
-
 $( document ).ready(function(){
-    runCode(RunningMethodEnum.RUN);
+    document.getElementById("btnRun").onclick = function() { runCode(RunningMethodEnum.RUN); };
 })
