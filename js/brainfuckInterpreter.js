@@ -56,14 +56,22 @@ function inputCommand(runningMethod) {
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         if (currentInputIdx >= input.length) {
             alert("Error: Input out of bounds");
+            // TODO: Stop execution
             return;
         }
-        inputByte = input[currentInputIdx];
+        let inputByte = input[currentInputIdx];
         memory[currentCellIdx].value = inputByte.charCodeAt(0);
         currentInputIdx++;
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
-        // TODO: handle and save input
+        let inputByte = prompt("Please enter a value between 0-255");
+        if (inputByte >= 0 && inputByte <= 255) {
+            memory[currentCellIdx].value = inputByte;
+        }
+        else {
+            alert("Error: Inncorrect input value");
+            // TODO: Stop execution
+        }
     }
 }
 
@@ -165,7 +173,9 @@ function runCode(runningMethod) {
         }
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
-        // TODO: handle this running method
+        while(!finished) {
+            nextCommand(runningMethod);
+        }
     }
 }
 
@@ -191,4 +201,6 @@ function loopsToString() {
 
 $( document ).ready(function(){
     document.getElementById("btnRun").onclick = function() { runCode(RunningMethodEnum.RUN); };
+    document.getElementById("btnRunVisualize").onclick = function() { runCode(RunningMethodEnum.RUN_VISUALIZE); };
+    document.getElementById("btnVisualize").onclick = function() { runCode(RunningMethodEnum.VISUALIZE); };
 })
