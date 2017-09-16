@@ -28,6 +28,15 @@ function initGUI(runningMethod) {
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
         keyPressedListenerActive = true;
     }
+    clearCanvas();
+    drawMemory();
+}
+
+function clearCanvas() {
+    while (scene.children.length)
+    {
+        scene.remove(scene.children[0]);
+    }
 }
 
 function createCell() {
@@ -231,6 +240,7 @@ function loopsToString() {
 }
 
 function drawMemory() {
+    clearCanvas();
     for (i = 0; i < memory.length; i++) {
         memory[i].draw(i, currentCellIdx);
     }

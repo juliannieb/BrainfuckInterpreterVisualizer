@@ -13,7 +13,6 @@ class MemoryCell {
     }
 
     draw(idx, currentCellIdx) {
-        scene.remove(this.object);
         this.object.position.x = 0 + ((cellSize + spaceBetweenCells) * (idx - currentCellIdx));
         this.object.position.y = 0;
         this.object.position.z = 0;
