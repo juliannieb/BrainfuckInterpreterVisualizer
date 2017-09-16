@@ -8,7 +8,7 @@ function initVisualizer() {
     setRenderer();
     objects = [];
 
-    addCubes();
+    //addCubes();
 }
 
 function setScene() {

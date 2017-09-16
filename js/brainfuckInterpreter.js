@@ -151,6 +151,7 @@ function runCommand(command, runningMethod) {
     else if (command == ']') {
         endLoop();
     }
+    drawMemory();
 }
 
 function nextCommand(runningMethod) {
@@ -227,6 +228,13 @@ function loopsToString() {
     }
     s += "]";
     return s;
+}
+
+function drawMemory() {
+    for (i = 0; i < memory.length; i++) {
+        memory[i].draw(i, currentCellIdx);
+    }
+    render();
 }
 
 $( document ).ready(function(){
