@@ -30,6 +30,28 @@ class MemoryCell {
         //object.scale.z = Math.random() + 0.5;
         //objects.push(object);
         scene.add(this.object);
+        
+        var loader = new THREE.FontLoader();
+        
+        loader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
+        
+          var material = new THREE.MeshPhongMaterial( { color: 0x0033ff, specular: 0x555555, shininess: 30 } );
+        
+          var geometry = new THREE.TextGeometry( 'Hello three.js!', {
+            font: font,
+            size: 80,
+            height: 5,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 10,
+            bevelSize: 8,
+            bevelSegments: 5
+          } );
+        
+          var mesh = new THREE.Mesh( geometry, material );
+        
+          scene.add(mesh);
+        });
     }
 
 }
