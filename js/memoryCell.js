@@ -13,6 +13,12 @@ class MemoryCell {
     }
 
     draw(idx, currentCellIdx) {
+        if (idx == currentCellIdx) {
+            this.object.material.emissive.setHex(0xff0000);
+        }
+        else {
+            this.object.material.emissive.setHex(0x777777);
+        }
         this.object.position.x = 0 + ((cellSize + spaceBetweenCells) * (idx - currentCellIdx));
         this.object.position.y = 0;
         this.object.position.z = 0;
