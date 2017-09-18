@@ -4,14 +4,42 @@ textSpace = 60;
 
 class MemoryCell {
 
-    constructor(value) {
+    constructor(value, font) {
         this.value = value;
+        this.addCube();
+        this.addText(font);
+    }
+
+    addCube() {
         var geometry = new THREE.BoxBufferGeometry( cellSize, cellSize, cellSize );
         this.object = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { 
             //color: Math.random() * 0xffffff 
             color: 0x777777,
             wireframe: true
         } ) );
+        this.object.position.x = 0;
+        this.object.position.y = 0;
+        this.object.position.z = 0;
+        scene.add(this.object);
+    }
+
+    addText(font) {
+        var textMaterial = new THREE.MeshPhongMaterial( { color: 0x0033ff, specular: 0x555555, shininess: 30 } );
+        var textGeometry = new THREE.TextGeometry(this.value, {
+            font: font,
+            size: 10,
+            height: 5,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 1,
+            bevelSize: 1,
+            bevelSegments: 5
+        } );
+        this.textMesh = new THREE.Mesh( textGeometry, textMaterial );
+        this.textMesh.position.x = this.object.position.x;
+        this.textMesh.position.y = this.object.position.y + textSpace;
+        this.textMesh.position.z = this.object.position.z;
+        scene.add(this.textMesh);
     }
 
     draw(idx, currentCellIdx, font) {
@@ -24,34 +52,9 @@ class MemoryCell {
         this.object.position.x = 0 + ((cellSize + spaceBetweenCells) * (idx - currentCellIdx));
         this.object.position.y = 0;
         this.object.position.z = 0;
-        //object.rotation.x = Math.random() * 2 * Math.PI;
-        //object.rotation.y = Math.random() * 2 * Math.PI;
-        //object.rotation.z = Math.random() * 2 * Math.PI;
-        //object.scale.x = Math.random() + 0.5;
-        //object.scale.y = Math.random() + 0.5;
-        //object.scale.z = Math.random() + 0.5;
-        //objects.push(object);
-        scene.add(this.object);
 
-        var material = new THREE.MeshPhongMaterial( { color: 0x0033ff, specular: 0x555555, shininess: 30 } );
-        
-        var geometry = new THREE.TextGeometry(this.value, {
-            font: font,
-            size: 10,
-            height: 5,
-            curveSegments: 12,
-            bevelEnabled: true,
-            bevelThickness: 1,
-            bevelSize: 1,
-            bevelSegments: 5
-        } );
-        
-        var mesh = new THREE.Mesh( geometry, material );
-        mesh.position.x = this.object.position.x;
-        mesh.position.y = this.object.position.y + textSpace;
-        mesh.position.z = this.object.position.z;
-        
-        scene.add(mesh);
+        scene.remove(this.textMesh);
+        this.addText(font);
     }
 
 }

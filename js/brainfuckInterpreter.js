@@ -29,7 +29,6 @@ function initGUI(runningMethod) {
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
         keyPressedListenerActive = true;
     }
-    clearCanvas();
     drawMemory();
 }
 
@@ -48,7 +47,7 @@ function clearCanvas() {
 }
 
 function createCell() {
-    return new MemoryCell(0);
+    return new MemoryCell(0, textFont);
 }
 
 function incrementPointer() {
@@ -178,6 +177,8 @@ function nextCommand(runningMethod) {
             return;
         }
         let nextCommand = commands[currentCommandIdx];
+        console.log(nextCommand);
+        console.log(loopsToString());
         runCommand(nextCommand, runningMethod);
         currentCommandIdx++;
         // TODO: handle visualization or not
@@ -193,6 +194,7 @@ function nextCommand(runningMethod) {
 }
 
 function runCode(runningMethod) {
+    clearCanvas();
     initInterpreter();
     initGUI(runningMethod);
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
@@ -248,7 +250,6 @@ function loopsToString() {
 }
 
 function drawMemory() {
-    clearCanvas();
     for (i = 0; i < memory.length; i++) {
         memory[i].draw(i, currentCellIdx, textFont);
     }
