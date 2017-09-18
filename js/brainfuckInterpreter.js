@@ -7,6 +7,7 @@ var currentInputIdx = 0;
 var loopStartIdxs = [];
 var finished = false;
 var keyPressedListenerActive = false;
+var textFont;
 
 function initInterpreter() {
     memory = [];
@@ -30,6 +31,13 @@ function initGUI(runningMethod) {
     }
     clearCanvas();
     drawMemory();
+}
+
+function loadFont(url) {
+    var loader = new THREE.FontLoader();
+    loader.load(url, function ( font ) {
+        textFont = font
+    });
 }
 
 function clearCanvas() {
@@ -242,7 +250,7 @@ function loopsToString() {
 function drawMemory() {
     clearCanvas();
     for (i = 0; i < memory.length; i++) {
-        memory[i].draw(i, currentCellIdx);
+        memory[i].draw(i, currentCellIdx, textFont);
     }
     render();
 }
@@ -252,4 +260,5 @@ $( document ).ready(function(){
     document.getElementById("btnRunVisualize").onclick = function() { runCode(RunningMethodEnum.RUN_VISUALIZE); };
     document.getElementById("btnVisualize").onclick = function() { runCode(RunningMethodEnum.VISUALIZE); };
     addOnKeyPressedListener();
+    loadFont("https://juliannieb.github.io/BrainfuckInterpreterVisualizer/fonts/helvetiker_regular.typeface.json");
 })
