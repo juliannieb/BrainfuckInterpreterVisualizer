@@ -219,7 +219,14 @@ function runCode(runningMethod) {
         keyPressedListenerActive = false;
         commands = document.getElementById("codeTextArea").value;
         input = document.getElementById("inputTextArea").value;
-        nextCommand(runningMethod);
+        if (runningMethod == RunningMethodEnum.RUN) {
+            nextCommand(runningMethod);
+        }
+        else if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+            setTimeout(function(){
+                nextCommand(runningMethod);
+            }, 500);
+        }
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
         keyPressedListenerActive = true;
