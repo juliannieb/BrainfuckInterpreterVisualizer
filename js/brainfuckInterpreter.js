@@ -25,11 +25,14 @@ function initGUI(runningMethod) {
     document.getElementById("outputTextArea").value = "";
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         keyPressedListenerActive = false;
+        if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+            drawMemory();
+        }
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
         keyPressedListenerActive = true;
+        drawMemory();
     }
-    drawMemory();
 }
 
 function loadFont(url) {
@@ -167,21 +170,31 @@ function runCommand(command, runningMethod) {
     else if (command == ']') {
         endLoop();
     }
-    drawMemory();
+    if (runningMethod == RunningMethodEnum.RUN_VISUALIZE || runningMethod == RunningMethodEnum.VISUALIZE) {
+        drawMemory();
+    }
 }
 
-function nextCommand(runningMethod) {
+var nextCommand = function nextCommandItself(runningMethod) {
+    if (finished) {
+        return;
+    }
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         if (currentCommandIdx >= commands.length) {
             finished = true;
             return;
         }
         let nextCommand = commands[currentCommandIdx];
-        console.log(nextCommand);
-        console.log(loopsToString());
         runCommand(nextCommand, runningMethod);
         currentCommandIdx++;
-        // TODO: handle visualization or not
+        if (runningMethod == RunningMethodEnum.RUN) {
+            nextCommandItself(runningMethod);
+        }
+        if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+            setTimeout(function(){
+                nextCommandItself(runningMethod);
+            }, 500);
+        }
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
         if (currentCommandIdx >= commands.length) {
@@ -201,9 +214,7 @@ function runCode(runningMethod) {
         keyPressedListenerActive = false;
         commands = document.getElementById("codeTextArea").value;
         input = document.getElementById("inputTextArea").value;
-        while(!finished) {
-            nextCommand(runningMethod);
-        }
+        nextCommand(runningMethod);
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
         keyPressedListenerActive = true;
