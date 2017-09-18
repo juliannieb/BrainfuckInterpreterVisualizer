@@ -203,6 +203,11 @@ var nextCommand = function nextCommandItself(runningMethod) {
         let nextCommand = commands[currentCommandIdx];
         runCommand(nextCommand, runningMethod);
         currentCommandIdx++;
+        if (currentCommandIdx < commands.length) {
+            setTimeout(function(){
+                nextCommandItself(runningMethod);
+            }, 500);
+        }
     }
 }
 
@@ -233,9 +238,6 @@ function addOnKeyPressedListener() {
             // alert(String.fromCharCode(event.which));
             commands = commands + String.fromCharCode(event.which);
             nextCommand(RunningMethodEnum.VISUALIZE);
-            while (currentCommandIdx < commands.length) {
-                nextCommand(RunningMethodEnum.VISUALIZE);
-            }
         }
     });
 }
