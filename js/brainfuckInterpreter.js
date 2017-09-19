@@ -8,6 +8,7 @@ var loopStartIdxs = [];
 var finished = false;
 var keyPressedListenerActive = false;
 var textFont;
+var speedRange;
 let instructionBaseTime = 500;
 
 function initInterpreter() {
@@ -24,6 +25,7 @@ function initInterpreter() {
 
 function initGUI(runningMethod) {
     document.getElementById("outputTextArea").value = "";
+    speedRange = document.getElementById("speedRange");
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         keyPressedListenerActive = false;
         if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
@@ -194,7 +196,7 @@ var nextCommand = function nextCommandItself(runningMethod) {
         if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
             setTimeout(function(){
                 nextCommandItself(runningMethod);
-            }, instructionBaseTime);
+            }, instructionBaseTime / speedRange.value);
         }
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
@@ -207,7 +209,7 @@ var nextCommand = function nextCommandItself(runningMethod) {
         if (currentCommandIdx < commands.length) {
             setTimeout(function(){
                 nextCommandItself(runningMethod);
-            }, instructionBaseTime);
+            }, instructionBaseTime / speedRange.value);
         }
     }
 }
@@ -226,7 +228,7 @@ function runCode(runningMethod) {
         else if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
             setTimeout(function(){
                 nextCommand(runningMethod);
-            }, instructionBaseTime);
+            }, instructionBaseTime / speedRange.value);
         }
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
