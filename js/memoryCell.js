@@ -1,7 +1,7 @@
-cellSize = 90;
-spaceBetweenCells = 50;
-textSpace = 90;
-textSize = 13;
+let cellSize = 90;
+let spaceBetweenCells = 50;
+let textSpace = 90;
+let textSize = 13;
 
 class MemoryCell {
 
