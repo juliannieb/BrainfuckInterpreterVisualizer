@@ -1,6 +1,7 @@
-cellSize = 60;
-spaceBetweenCells = 30;
-textSpace = 60;
+cellSize = 90;
+spaceBetweenCells = 50;
+textSpace = 90;
+textSize = 13;
 
 class MemoryCell {
 
@@ -27,7 +28,7 @@ class MemoryCell {
         var textMaterial = new THREE.MeshPhongMaterial( { color: 0x0033ff, specular: 0x555555, shininess: 30 } );
         var textGeometry = new THREE.TextGeometry(this.value, {
             font: font,
-            size: 10,
+            size: textSize,
             height: 5,
             curveSegments: 12,
             bevelEnabled: true,

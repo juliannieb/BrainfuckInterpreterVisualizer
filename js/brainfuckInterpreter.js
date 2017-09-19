@@ -8,6 +8,7 @@ var loopStartIdxs = [];
 var finished = false;
 var keyPressedListenerActive = false;
 var textFont;
+let instructionBaseTime = 500;
 
 function initInterpreter() {
     memory = [];
@@ -193,7 +194,7 @@ var nextCommand = function nextCommandItself(runningMethod) {
         if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
             setTimeout(function(){
                 nextCommandItself(runningMethod);
-            }, 500);
+            }, instructionBaseTime);
         }
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
@@ -206,7 +207,7 @@ var nextCommand = function nextCommandItself(runningMethod) {
         if (currentCommandIdx < commands.length) {
             setTimeout(function(){
                 nextCommandItself(runningMethod);
-            }, 500);
+            }, instructionBaseTime);
         }
     }
 }
@@ -225,7 +226,7 @@ function runCode(runningMethod) {
         else if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
             setTimeout(function(){
                 nextCommand(runningMethod);
-            }, 500);
+            }, instructionBaseTime);
         }
     }
     else if (runningMethod == RunningMethodEnum.VISUALIZE) {
