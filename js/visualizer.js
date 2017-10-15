@@ -2,6 +2,9 @@ var scene, camera, renderer;
 var geometry, material, mesh;
 var objects;
 
+/**
+ * Init all the elements for the visualization in the canvas.
+ */
 function initVisualizer() {
     setScene();
     setCamera();
@@ -11,6 +14,9 @@ function initVisualizer() {
     //addCubes();
 }
 
+/**
+ * Set the three.js scene.
+ */
 function setScene() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf0f0f0);
@@ -19,12 +25,18 @@ function setScene() {
     scene.add(light);
 }
 
+/**
+ * Set the three.js camera.
+ */
 function setCamera() {
     let canvas = document.getElementById("canvas");
     camera = new THREE.PerspectiveCamera(70, canvas.offsetWidth / canvas.offsetWidth, 1, 10000);
     camera.position.z = 1000;
 }
 
+/**
+ * Set the three.js renderer.
+ */
 function setRenderer() {
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -33,35 +45,20 @@ function setRenderer() {
     canvas.appendChild(renderer.domElement);
 }
 
+/**
+ * Set the animate function for rendering the canvas.
+ */
 function animate() {
     requestAnimationFrame(animate);
 
     render();
 }
 
+/**
+ * Renders the scene with the corresponding camera.
+ */
 function render() {
     renderer.render(scene, camera);
-}
-
-function addCubes() {
-    var geometry = new THREE.BoxBufferGeometry( 20, 20, 20 );
-    for (var i = 0; i < objects.length; i++) {
-        scene.remove(objects[i]);
-    }
-    for (var i = 0; i < 100; i ++) {
-        var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
-        object.position.x = Math.random() * 800 - 400;
-        object.position.y = Math.random() * 800 - 400;
-        object.position.z = Math.random() * 800 - 400;
-        object.rotation.x = Math.random() * 2 * Math.PI;
-        object.rotation.y = Math.random() * 2 * Math.PI;
-        object.rotation.z = Math.random() * 2 * Math.PI;
-        object.scale.x = Math.random() + 0.5;
-        object.scale.y = Math.random() + 0.5;
-        object.scale.z = Math.random() + 0.5;
-        objects.push(object);
-        scene.add( object );
-    }
 }
 
 $( document ).ready(function(){
