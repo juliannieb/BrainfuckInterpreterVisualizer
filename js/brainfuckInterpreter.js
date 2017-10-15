@@ -11,6 +11,9 @@ var textFont;
 var speedRange;
 let instructionBaseTime = 500;
 
+/**
+ * Set the initial values for the interpreter fields.
+ */
 function initInterpreter() {
     memory = [];
     currentCellIdx = 0;
@@ -23,6 +26,11 @@ function initInterpreter() {
     memory.push(createCell());
 }
 
+/**
+ * Set the initial values necessary for the visualization.
+ * 
+ * @param {RunningMethodEnum} runningMethod 
+ */
 function initGUI(runningMethod) {
     document.getElementById("outputTextArea").value = "";
     speedRange = document.getElementById("speedRange");
@@ -38,6 +46,11 @@ function initGUI(runningMethod) {
     }
 }
 
+/**
+ * Load font asynchronous for drawing cell values.
+ * 
+ * @param {string} url 
+ */
 function loadFont(url) {
     var loader = new THREE.FontLoader();
     loader.load(url, function ( font ) {
@@ -45,6 +58,9 @@ function loadFont(url) {
     });
 }
 
+/**
+ * Remove every element in the canvas.
+ */
 function clearCanvas() {
     while (scene.children.length)
     {
@@ -52,10 +68,18 @@ function clearCanvas() {
     }
 }
 
+/**
+ * Creates a new MemoryCell object.
+ * 
+ * @return MemoryCell a whole new MemoryCell object
+ */
 function createCell() {
     return new MemoryCell(0, textFont);
 }
 
+/**
+ * Handler for the increment '>' command.
+ */
 function incrementPointer() {
     currentCellIdx++;
     while (currentCellIdx >= memory.length) {
@@ -63,24 +87,39 @@ function incrementPointer() {
     }
 }
 
+/**
+ * Handle for the decrement '<' command.
+ */
 function decrementPointer() {
     if (currentCellIdx > 0) {
         currentCellIdx--;
     }
 }
 
+/**
+ * Handler for the increment value '+' command.
+ */
 function incrementValue() {
     if (memory[currentCellIdx].value < 255) {
         (memory[currentCellIdx].value)++;
     }
 }
 
+/**
+ * Handler for the decrement value '-' command.
+ */
 function decrementValue() {
     if (memory[currentCellIdx].value > 0) {
         (memory[currentCellIdx].value)--;
     }
 }
 
+/**
+ * Handler for the input ',' command.
+ * Gets one input character from the user according to the current runningMethod.
+ * 
+ * @param {RunningMethodEnum} runningMethod 
+ */
 function inputCommand(runningMethod) {
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
         if (currentInputIdx >= input.length) {
@@ -104,6 +143,9 @@ function inputCommand(runningMethod) {
     }
 }
 
+/**
+ * Handler for the output '.' command.
+ */
 function outputCommand() {
     var value = memory[currentCellIdx].value;
     if (value >= 0 && value <= 255) {
@@ -117,6 +159,9 @@ function outputCommand() {
     }
 }
 
+/**
+ * Handler for the start loop '[' command.
+ */
 function startLoop() {
     var value = memory[currentCellIdx].value;
     if (value != 0) {
@@ -127,6 +172,9 @@ function startLoop() {
     }
 }
 
+/**
+ * Handler for the end loop '[' command.
+ */
 function endLoop() {
     if (loopStartIdxs.length == 0) {
         // TODO: Handle syntax error
@@ -141,6 +189,13 @@ function endLoop() {
     }
 }
 
+/**
+ * Select the correct handler for the current command of the tape and execute it
+ * according to the current runningMethod.
+ * 
+ * @param {char} command 
+ * @param {RunningMethodEnum} runningMethod 
+ */
 function runCommand(command, runningMethod) {
     if (supportedCommands.indexOf(command) == -1 && ignoredCommands.indexOf(command) == -1) {
         // TODO: Handle wrong command error
@@ -178,6 +233,11 @@ function runCommand(command, runningMethod) {
     }
 }
 
+/**
+ * Get one new command from the user according to the current runningMethod.
+ * 
+ * @param {RunningMethodEnum} runningMethod 
+ */
 var nextCommand = function nextCommandItself(runningMethod) {
     if (finished) {
         return;
@@ -214,6 +274,12 @@ var nextCommand = function nextCommandItself(runningMethod) {
     }
 }
 
+/**
+ * Run a Brainfuck program according to the selected runningMethod.
+ * Init all the necessary elements for the interpreter and the canvas.
+ * 
+ * @param {RunningMethodEnum} runningMethod 
+ */
 function runCode(runningMethod) {
     clearCanvas();
     initInterpreter();
@@ -237,6 +303,10 @@ function runCode(runningMethod) {
     }
 }
 
+/**
+ * Add a listener for the keyboard when the runningMethod is VISUALIZE to run the program
+ * in real time.
+ */
 function addOnKeyPressedListener() {
     $(document).keypress(function(event){
         if (keyPressedListenerActive) {
@@ -252,6 +322,11 @@ function addOnKeyPressedListener() {
     });
 }
 
+/**
+ * Creates a string representation of the current state of the memory.
+ * 
+ * @return string A string representation of the memory
+ */
 function memoryToString() {
     s = "";
     s += "[";
@@ -262,6 +337,11 @@ function memoryToString() {
     return s;
 }
 
+/**
+ * Creates a string representation of the current state of the loops.
+ * 
+ * @return string A string representation of the loops
+ */
 function loopsToString() {
     s = "";
     s += "[";
@@ -272,6 +352,9 @@ function loopsToString() {
     return s;
 }
 
+/**
+ * Draw the state of each memory cell in the canvas and renders it.
+ */
 function drawMemory() {
     for (i = 0; i < memory.length; i++) {
         memory[i].draw(i, currentCellIdx, textFont);
