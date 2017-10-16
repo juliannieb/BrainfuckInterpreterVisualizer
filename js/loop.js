@@ -1,5 +1,5 @@
 /**
- * Class to control loops in the code execution.
+ * Class representing a loop in the code execution.
  */
 class Loop {
 

@@ -4,7 +4,7 @@ let textSpace = 90;
 let textSize = 13;
 
 /**
- * Class to manage the cells of memory of the program execution.
+ * Class representing a cell of memory of the program execution.
  */
 class MemoryCell {
 
