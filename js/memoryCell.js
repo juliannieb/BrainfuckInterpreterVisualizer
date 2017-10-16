@@ -11,8 +11,8 @@ class MemoryCell {
     /**
      * Constructor for a new MemoryCell object.
      * 
-     * @param {int} value Initial value for the cell
-     * @param {Font} font Font for drawing the value
+     * @param {int} value - Initial value for the cell
+     * @param {Font} font - Font for drawing the value
      */
     constructor(value, font) {
         this.value = value;
@@ -39,7 +39,7 @@ class MemoryCell {
     /**
      * Create a text mesh for drawing the value of the cell and adds it in the scene.
      * 
-     * @param {Font} font 
+     * @param {Font} font - The font previously loaded for drawing the cell value
      */
     addText(font) {
         var textMaterial = new THREE.MeshPhongMaterial( { color: 0x0033ff, specular: 0x555555, shininess: 30 } );
@@ -64,9 +64,9 @@ class MemoryCell {
      * Draw the cell in the scene with the corresponding coordinates according to the
      * cell index and the current pointer index.
      * 
-     * @param {int} idx Index of the cell
-     * @param {int} currentCellIdx Index of the current pointer
-     * @param {Font} font Font to draw the cell value
+     * @param {int} idx - Index of the cell
+     * @param {int} currentCellIdx - Index of the current pointer
+     * @param {Font} font - Font to draw the cell value
      */
     draw(idx, currentCellIdx, font) {
         if (idx == currentCellIdx) {

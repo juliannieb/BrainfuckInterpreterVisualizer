@@ -34,7 +34,7 @@ function initInterpreter() {
 /**
  * Set the initial values necessary for the visualization.
  * 
- * @param {RunningMethodEnum} runningMethod 
+ * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
  */
 function initGUI(runningMethod) {
     document.getElementById("outputTextArea").value = "";
@@ -123,7 +123,7 @@ function decrementValue() {
  * Handler for the input ',' command.
  * Gets one input character from the user according to the current runningMethod.
  * 
- * @param {RunningMethodEnum} runningMethod 
+ * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
  */
 function inputCommand(runningMethod) {
     if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
@@ -198,8 +198,8 @@ function endLoop() {
  * Select the correct handler for the current command of the tape and execute it
  * according to the current runningMethod.
  * 
- * @param {char} command 
- * @param {RunningMethodEnum} runningMethod 
+ * @param {char} command - Char indicating the current command. See the supportedCommands list in utils.js
+ * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
  */
 function runCommand(command, runningMethod) {
     if (supportedCommands.indexOf(command) == -1 && ignoredCommands.indexOf(command) == -1) {
@@ -241,7 +241,7 @@ function runCommand(command, runningMethod) {
 /**
  * Get one new command from the user according to the current runningMethod.
  * 
- * @param {RunningMethodEnum} runningMethod 
+ * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
  */
 var nextCommand = function nextCommandItself(runningMethod) {
     if (finished) {
@@ -283,7 +283,7 @@ var nextCommand = function nextCommandItself(runningMethod) {
  * Run a Brainfuck program according to the selected runningMethod.
  * Init all the necessary elements for the interpreter and the canvas.
  * 
- * @param {RunningMethodEnum} runningMethod 
+ * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
  */
 function runCode(runningMethod) {
     clearCanvas();
