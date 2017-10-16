@@ -31,376 +31,390 @@
  * This file provides a script to interpret a Brainfuck program.
  */
 
-var memory = [];
-var currentCellIdx = 0;
-var commands = "";
-var input = "";
-var currentCommandIdx = 0;
-var currentInputIdx = 0;
-var loopStartIdxs = [];
-var finished = false;
-var keyPressedListenerActive = false;
-var textFont;
-var speedRange;
-let instructionBaseTime = 500;
+ /**
+  * Class representing a Brainfuck Interpreter.
+  */
+class BrainfuckInterpreter {
 
-/**
- * Set the initial values for the interpreter fields.
- */
-function initInterpreter() {
-    memory = [];
-    currentCellIdx = 0;
-    commands = "";
-    input = "";
-    currentCommandIdx = 0;
-    currentInputIdx = 0;
-    loopStartIdxs = [];
-    finished = false;
-    memory.push(createCell());
-}
+    /**
+     * Constructor for a Brainfuck Interpreter
+     */
+    constructor() {
+        this.initInterpreter();
+    }
 
-/**
- * Set the initial values necessary for the visualization.
- * 
- * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
- */
-function initGUI(runningMethod) {
-    document.getElementById("outputTextArea").value = "";
-    speedRange = document.getElementById("speedRange");
-    if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
-        keyPressedListenerActive = false;
-        if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
-            drawMemory();
+    /**
+     * Set the initial values for the interpreter fields.
+     */
+    initInterpreter() {
+        this.memory = [];
+        this.currentCellIdx = 0;
+        this.commands = "";
+        this.input = "";
+        this.currentCommandIdx = 0;
+        this.currentInputIdx = 0;
+        this.loopStartIdxs = [];
+        this.finished = false;
+        this.keyPressedListenerActive = false;
+        this.instructionBaseTime = 500;
+        this.memory.push(this.createCell());
+    }
+
+    /**
+     * Set the initial values necessary for the visualization.
+     * 
+     * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
+     */
+    initGUI(runningMethod) {
+        document.getElementById("outputTextArea").value = "";
+        this.speedRange = document.getElementById("speedRange");
+        if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+            this.keyPressedListenerActive = false;
+            if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+                this.drawMemory();
+            }
         }
-    }
-    else if (runningMethod == RunningMethodEnum.VISUALIZE) {
-        keyPressedListenerActive = true;
-        drawMemory();
-    }
-}
-
-/**
- * Load font asynchronous for drawing cell values.
- * 
- * @param {string} url 
- */
-function loadFont(url) {
-    var loader = new THREE.FontLoader();
-    loader.load(url, function ( font ) {
-        textFont = font
-    });
-}
-
-/**
- * Remove every element in the canvas.
- */
-function clearCanvas() {
-    while (scene.children.length)
-    {
-        scene.remove(scene.children[0]);
-    }
-}
-
-/**
- * Creates a new MemoryCell object.
- * 
- * @return MemoryCell a whole new MemoryCell object
- */
-function createCell() {
-    return new MemoryCell(0, textFont);
-}
-
-/**
- * Handler for the increment '>' command.
- */
-function incrementPointer() {
-    currentCellIdx++;
-    while (currentCellIdx >= memory.length) {
-        memory.push(createCell());
-    }
-}
-
-/**
- * Handle for the decrement '&lt;' command.
- */
-function decrementPointer() {
-    if (currentCellIdx > 0) {
-        currentCellIdx--;
-    }
-}
-
-/**
- * Handler for the increment value '+' command.
- */
-function incrementValue() {
-    if (memory[currentCellIdx].value &lt; 255) {
-        (memory[currentCellIdx].value)++;
-    }
-}
-
-/**
- * Handler for the decrement value '-' command.
- */
-function decrementValue() {
-    if (memory[currentCellIdx].value > 0) {
-        (memory[currentCellIdx].value)--;
-    }
-}
-
-/**
- * Handler for the input ',' command.
- * Gets one input character from the user according to the current runningMethod.
- * 
- * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
- */
-function inputCommand(runningMethod) {
-    if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
-        if (currentInputIdx >= input.length) {
-            alert("Error: Input out of bounds");
-            // TODO: Stop execution
-            return;
-        }
-        let inputByte = input[currentInputIdx];
-        memory[currentCellIdx].value = inputByte.charCodeAt(0);
-        currentInputIdx++;
-    }
-    else if (runningMethod == RunningMethodEnum.VISUALIZE) {
-        let inputByte = prompt("Please enter a value between 0-255");
-        if (inputByte >= 0 &amp;&amp; inputByte &lt;= 255) {
-            memory[currentCellIdx].value = inputByte;
-        }
-        else {
-            alert("Error: Inncorrect input value");
-            // TODO: Stop execution
-        }
-    }
-}
-
-/**
- * Handler for the output '.' command.
- */
-function outputCommand() {
-    var value = memory[currentCellIdx].value;
-    if (value >= 0 &amp;&amp; value &lt;= 255) {
-        var valChar = String.fromCharCode(value);
-        var outputTextBox = document.getElementById("outputTextArea");
-        var outputSoFar = outputTextBox.value;
-        var newOutput = outputSoFar + valChar;
-        outputTextBox.value = newOutput;
-        Materialize.updateTextFields();
-        $('#outputTextArea').trigger('autoresize');
-    }
-}
-
-/**
- * Handler for the start loop '[' command.
- */
-function startLoop() {
-    var value = memory[currentCellIdx].value;
-    if (value != 0) {
-        loopStartIdxs.push(new Loop(currentCommandIdx, true));
-    }
-    else {
-        loopStartIdxs.push(new Loop(currentCommandIdx, false));
-    }
-}
-
-/**
- * Handler for the end loop '[' command.
- */
-function endLoop() {
-    if (loopStartIdxs.length == 0) {
-        // TODO: Handle syntax error
-        return;
-    }
-    var value = memory[currentCellIdx].value;
-    if (value != 0) {
-        currentCommandIdx = loopStartIdxs[loopStartIdxs.length - 1].idx;
-    }
-    else {
-        loopStartIdxs.pop();
-    }
-}
-
-/**
- * Select the correct handler for the current command of the tape and execute it
- * according to the current runningMethod.
- * 
- * @param {char} command - Char indicating the current command. See the supportedCommands list in utils.js
- * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
- */
-function runCommand(command, runningMethod) {
-    if (supportedCommands.indexOf(command) == -1 &amp;&amp; ignoredCommands.indexOf(command) == -1) {
-        // TODO: Handle wrong command error
-        alert("Invalid command " + command + " = " + command.charCodeAt(0) + " at idx: " + currentCommandIdx);
-    }
-    if (loopStartIdxs.length == 0 || loopStartIdxs[loopStartIdxs.length - 1].valid) {
-        if (command == '>') {
-            incrementPointer();
-        }
-        else if (command == '&lt;') {
-            decrementPointer();
-        }
-        else if (command == '+') {
-            incrementValue();
-        }
-        else if (command == '-') {
-            decrementValue();
-        }
-        else if (command == ',') {
-            inputCommand(runningMethod);
-        }
-        else if (command == '.') {
-            outputCommand();
+        else if (runningMethod == RunningMethodEnum.VISUALIZE) {
+            this.keyPressedListenerActive = true;
+            this.drawMemory();
         }
     }
 
-    if (command == '[') {
-        startLoop();
+    /**
+     * Load font asynchronous for drawing cell values.
+     * 
+     * @param {string} url 
+     */
+    loadFont(url) {
+        var loader = new THREE.FontLoader();
+        let interpreter = this;
+        loader.load(url, function ( font ) {
+            interpreter.textFont = font;
+        });
     }
-    else if (command == ']') {
-        endLoop();
-    }
-    if (runningMethod == RunningMethodEnum.RUN_VISUALIZE || runningMethod == RunningMethodEnum.VISUALIZE) {
-        drawMemory();
-    }
-}
 
-/**
- * Get one new command from the user according to the current runningMethod.
- * 
- * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
- */
-var nextCommand = function nextCommandItself(runningMethod) {
-    if (finished) {
-        return;
-    }
-    if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
-        if (currentCommandIdx >= commands.length) {
-            finished = true;
-            return;
-        }
-        let nextCommand = commands[currentCommandIdx];
-        runCommand(nextCommand, runningMethod);
-        currentCommandIdx++;
-        if (runningMethod == RunningMethodEnum.RUN) {
-            nextCommandItself(runningMethod);
-        }
-        if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
-            setTimeout(function(){
-                nextCommandItself(runningMethod);
-            }, instructionBaseTime / speedRange.value);
+    /**
+     * Remove every element in the canvas.
+     */
+    clearCanvas() {
+        while (scene.children.length)
+        {
+            scene.remove(scene.children[0]);
         }
     }
-    else if (runningMethod == RunningMethodEnum.VISUALIZE) {
-        if (currentCommandIdx >= commands.length) {
-            return;
-        }
-        let nextCommand = commands[currentCommandIdx];
-        runCommand(nextCommand, runningMethod);
-        currentCommandIdx++;
-        if (currentCommandIdx &lt; commands.length) {
-            setTimeout(function(){
-                nextCommandItself(runningMethod);
-            }, instructionBaseTime / speedRange.value);
-        }
-    }
-}
 
-/**
- * Run a Brainfuck program according to the selected runningMethod.
- * Init all the necessary elements for the interpreter and the canvas.
- * 
- * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
- */
-function runCode(runningMethod) {
-    clearCanvas();
-    initInterpreter();
-    initGUI(runningMethod);
-    if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
-        keyPressedListenerActive = false;
-        commands = document.getElementById("codeTextArea").value;
-        input = document.getElementById("inputTextArea").value;
-        if (runningMethod == RunningMethodEnum.RUN) {
-            nextCommand(runningMethod);
-        }
-        else if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
-            setTimeout(function(){
-                nextCommand(runningMethod);
-            }, instructionBaseTime / speedRange.value);
-        }
+    /**
+     * Creates a new MemoryCell object.
+     * 
+     * @return MemoryCell a whole new MemoryCell object
+     */
+    createCell() {
+        return new MemoryCell(0, this.textFont);
     }
-    else if (runningMethod == RunningMethodEnum.VISUALIZE) {
-        keyPressedListenerActive = true;
-        commands = "";
-    }
-}
 
-/**
- * Add a listener for the keyboard when the runningMethod is VISUALIZE to run the program
- * in real time.
- */
-function addOnKeyPressedListener() {
-    $(document).keypress(function(event){
-        if (keyPressedListenerActive) {
-            event.preventDefault();
-            if (event.keyCode == ENTER_KEY_CODE) {
-                keyPressedListenerActive = false;
+    /**
+     * Handler for the increment '>' command.
+     */
+    incrementPointer() {
+        this.currentCellIdx++;
+        while (this.currentCellIdx >= this.memory.length) {
+            this.memory.push(this.createCell());
+        }
+    }
+
+    /**
+     * Handle for the decrement '&lt;' command.
+     */
+    decrementPointer() {
+        if (this.currentCellIdx > 0) {
+            this.currentCellIdx--;
+        }
+    }
+
+    /**
+     * Handler for the increment value '+' command.
+     */
+    incrementValue() {
+        if (this.memory[this.currentCellIdx].value &lt; 255) {
+            (this.memory[this.currentCellIdx].value)++;
+        }
+    }
+
+    /**
+     * Handler for the decrement value '-' command.
+     */
+    decrementValue() {
+        if (this.memory[this.currentCellIdx].value > 0) {
+            (this.memory[this.currentCellIdx].value)--;
+        }
+    }
+
+    /**
+     * Handler for the this.input ',' command.
+     * Gets one this.input character from the user according to the current runningMethod.
+     * 
+     * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
+     */
+    inputCommand(runningMethod) {
+        if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+            if (this.currentInputIdx >= this.input.length) {
+                alert("Error: Input out of bounds");
+                // TODO: Stop execution
                 return;
             }
-            // alert(String.fromCharCode(event.which));
-            commands = commands + String.fromCharCode(event.which);
-            nextCommand(RunningMethodEnum.VISUALIZE);
+            let inputByte = this.input[this.currentInputIdx];
+            this.memory[this.currentCellIdx].value = inputByte.charCodeAt(0);
+            this.currentInputIdx++;
         }
-    });
+        else if (runningMethod == RunningMethodEnum.VISUALIZE) {
+            let inputByte = prompt("Please enter a value between 0-255");
+            if (inputByte >= 0 &amp;&amp; inputByte &lt;= 255) {
+                this.memory[this.currentCellIdx].value = inputByte;
+            }
+            else {
+                alert("Error: Inncorrect this.input value");
+                // TODO: Stop execution
+            }
+        }
+    }
+
+    /**
+     * Handler for the output '.' command.
+     */
+    outputCommand() {
+        var value = this.memory[this.currentCellIdx].value;
+        if (value >= 0 &amp;&amp; value &lt;= 255) {
+            var valChar = String.fromCharCode(value);
+            var outputTextBox = document.getElementById("outputTextArea");
+            var outputSoFar = outputTextBox.value;
+            var newOutput = outputSoFar + valChar;
+            outputTextBox.value = newOutput;
+            Materialize.updateTextFields();
+            $('#outputTextArea').trigger('autoresize');
+        }
+    }
+
+    /**
+     * Handler for the start loop '[' command.
+     */
+    startLoop() {
+        var value = this.memory[this.currentCellIdx].value;
+        if (value != 0) {
+            this.loopStartIdxs.push(new Loop(this.currentCommandIdx, true));
+        }
+        else {
+            this.loopStartIdxs.push(new Loop(this.currentCommandIdx, false));
+        }
+    }
+
+    /**
+     * Handler for the end loop '[' command.
+     */
+    endLoop() {
+        if (this.loopStartIdxs.length == 0) {
+            // TODO: Handle syntax error
+            return;
+        }
+        var value = this.memory[this.currentCellIdx].value;
+        if (value != 0) {
+            this.currentCommandIdx = this.loopStartIdxs[this.loopStartIdxs.length - 1].idx;
+        }
+        else {
+            this.loopStartIdxs.pop();
+        }
+    }
+
+    /**
+     * Select the correct handler for the current command of the tape and execute it
+     * according to the current runningMethod.
+     * 
+     * @param {char} command - Char indicating the current command. See the supportedCommands list in utils.js
+     * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
+     */
+    runCommand(command, runningMethod) {
+        if (supportedCommands.indexOf(command) == -1 &amp;&amp; ignoredCommands.indexOf(command) == -1) {
+            // TODO: Handle wrong command error
+            alert("Invalid command " + command + " = " + command.charCodeAt(0) + " at idx: " + this.currentCommandIdx);
+        }
+        if (this.loopStartIdxs.length == 0 || this.loopStartIdxs[this.loopStartIdxs.length - 1].valid) {
+            if (command == '>') {
+                this.incrementPointer();
+            }
+            else if (command == '&lt;') {
+                this.decrementPointer();
+            }
+            else if (command == '+') {
+                this.incrementValue();
+            }
+            else if (command == '-') {
+                this.decrementValue();
+            }
+            else if (command == ',') {
+                this.inputCommand(runningMethod);
+            }
+            else if (command == '.') {
+                this.outputCommand();
+            }
+        }
+
+        if (command == '[') {
+            this.startLoop();
+        }
+        else if (command == ']') {
+            this.endLoop();
+        }
+        if (runningMethod == RunningMethodEnum.RUN_VISUALIZE || runningMethod == RunningMethodEnum.VISUALIZE) {
+            this.drawMemory();
+        }
+    }
+
+    /**
+     * Get one new command from the user according to the current runningMethod.
+     * 
+     * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
+     */
+    nextCommand(runningMethod) {
+        if (this.finished) {
+            return;
+        }
+        if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+            if (this.currentCommandIdx >= this.commands.length) {
+                this.finished = true;
+                return;
+            }
+            let nextCommandChar = this.commands[this.currentCommandIdx];
+            this.runCommand(nextCommandChar, runningMethod);
+            this.currentCommandIdx++;
+            if (runningMethod == RunningMethodEnum.RUN) {
+                this.nextCommand(runningMethod);
+            }
+            if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+                let interpreter = this;
+                setTimeout(function(){
+                    interpreter.nextCommand(runningMethod);
+                }, this.instructionBaseTime / this.speedRange.value);
+            }
+        }
+        else if (runningMethod == RunningMethodEnum.VISUALIZE) {
+            if (this.currentCommandIdx >= this.commands.length) {
+                return;
+            }
+            let nextCommandChar = this.commands[this.currentCommandIdx];
+            this.runCommand(nextCommandChar, runningMethod);
+            this.currentCommandIdx++;
+            if (this.currentCommandIdx &lt; this.commands.length) {
+                let interpreter = this;
+                setTimeout(function(){
+                    interpreter.nextCommand(runningMethod);
+                }, this.instructionBaseTime / this.speedRange.value);
+            }
+        }
+    }
+
+    /**
+     * Run a Brainfuck program according to the selected runningMethod.
+     * Init all the necessary elements for the interpreter and the canvas.
+     * 
+     * @param {RunningMethodEnum} runningMethod - Selected runningMethod for the execution. See RunningMethodEnum in utils.js
+     */
+    runCode(runningMethod) {
+        this.clearCanvas();
+        this.initInterpreter();
+        this.initGUI(runningMethod);
+        if (runningMethod == RunningMethodEnum.RUN || runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+            this.keyPressedListenerActive = false;
+            this.commands = document.getElementById("codeTextArea").value;
+            this.input = document.getElementById("inputTextArea").value;
+            if (runningMethod == RunningMethodEnum.RUN) {
+                this.nextCommand(runningMethod);
+            }
+            else if (runningMethod == RunningMethodEnum.RUN_VISUALIZE) {
+                let interpreter = this;
+                setTimeout(function(){
+                    interpreter.nextCommand(runningMethod);
+                }, this.instructionBaseTime / this.speedRange.value);
+            }
+        }
+        else if (runningMethod == RunningMethodEnum.VISUALIZE) {
+            this.keyPressedListenerActive = true;
+            this.commands = "";
+        }
+    }
+
+    /**
+     * Add a listener for the keyboard when the runningMethod is VISUALIZE to run the program
+     * in real time.
+     */
+    addOnKeyPressedListener() {
+        let interpreter = this;
+        $(document).keypress(function(event){
+            if (interpreter.keyPressedListenerActive) {
+                event.preventDefault();
+                if (event.keyCode == ENTER_KEY_CODE) {
+                    interpreter.keyPressedListenerActive = false;
+                    return;
+                }
+                // alert(String.fromCharCode(event.which));
+                interpreter.commands = interpreter.commands + String.fromCharCode(event.which);
+                interpreter.nextCommand(RunningMethodEnum.VISUALIZE);
+            }
+        });
+    }
+
+    /**
+     * Creates a string representation of the current state of the this.memory.
+     * 
+     * @return string A string representation of the this.memory
+     */
+    memoryToString() {
+        s = "";
+        s += "[";
+        for(i = 0; i &lt; this.memory.length; i++) {
+            s += this.memory[i].value + (i == this.memory.length - 1 ? "" : ",");
+        }
+        s += "]";
+        return s;
+    }
+
+    /**
+     * Creates a string representation of the current state of the loops.
+     * 
+     * @return string A string representation of the loops
+     */
+    loopsToString() {
+        s = "";
+        s += "[";
+        for(i = 0; i &lt; this.loopStartIdxs.length; i++) {
+            s += "(" + this.loopStartIdxs[i].idx + ", " + this.loopStartIdxs[i].valid + ")" + (i == this.loopStartIdxs.length - 1 ? "" : ",");
+        }
+        s += "]";
+        return s;
+    }
+
+    /**
+     * Draw the state of each this.memory cell in the canvas and renders it.
+     */
+    drawMemory() {
+        for (var i = 0; i &lt; this.memory.length; i++) {
+            this.memory[i].draw(i, this.currentCellIdx, this.textFont);
+        }
+        render();
+    }
+
 }
 
-/**
- * Creates a string representation of the current state of the memory.
- * 
- * @return string A string representation of the memory
- */
-function memoryToString() {
-    s = "";
-    s += "[";
-    for(i = 0; i &lt; memory.length; i++) {
-        s += memory[i].value + (i == memory.length - 1 ? "" : ",");
-    }
-    s += "]";
-    return s;
-}
 
-/**
- * Creates a string representation of the current state of the loops.
- * 
- * @return string A string representation of the loops
- */
-function loopsToString() {
-    s = "";
-    s += "[";
-    for(i = 0; i &lt; loopStartIdxs.length; i++) {
-        s += "(" + loopStartIdxs[i].idx + ", " + loopStartIdxs[i].valid + ")" + (i == loopStartIdxs.length - 1 ? "" : ",");
-    }
-    s += "]";
-    return s;
-}
 
-/**
- * Draw the state of each memory cell in the canvas and renders it.
- */
-function drawMemory() {
-    for (i = 0; i &lt; memory.length; i++) {
-        memory[i].draw(i, currentCellIdx, textFont);
-    }
-    render();
-}
+
 
 $( document ).ready(function(){
-    document.getElementById("btnRun").onclick = function() { runCode(RunningMethodEnum.RUN); };
-    document.getElementById("btnRunVisualize").onclick = function() { runCode(RunningMethodEnum.RUN_VISUALIZE); };
-    document.getElementById("btnVisualize").onclick = function() { runCode(RunningMethodEnum.VISUALIZE); };
-    addOnKeyPressedListener();
-    loadFont("https://juliannieb.github.io/BrainfuckInterpreterVisualizer/fonts/helvetiker_regular.typeface.json");
+    let interpreter = new BrainfuckInterpreter();
+    console.log(interpreter);
+    document.getElementById("btnRun").onclick = function() { interpreter.runCode(RunningMethodEnum.RUN); };
+    document.getElementById("btnRunVisualize").onclick = function() { interpreter.runCode(RunningMethodEnum.RUN_VISUALIZE); };
+    document.getElementById("btnVisualize").onclick = function() { interpreter.runCode(RunningMethodEnum.VISUALIZE); };
+    interpreter.addOnKeyPressedListener();
+    interpreter.loadFont("https://juliannieb.github.io/BrainfuckInterpreterVisualizer/fonts/helvetiker_regular.typeface.json");
 })</code></pre>
         </article>
     </section>
@@ -411,13 +425,13 @@ $( document ).ready(function(){
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Loop.html">Loop</a></li><li><a href="MemoryCell.html">MemoryCell</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addOnKeyPressedListener">addOnKeyPressedListener</a></li><li><a href="global.html#animate">animate</a></li><li><a href="global.html#clearCanvas">clearCanvas</a></li><li><a href="global.html#createCell">createCell</a></li><li><a href="global.html#decrementPointer">decrementPointer</a></li><li><a href="global.html#decrementValue">decrementValue</a></li><li><a href="global.html#drawMemory">drawMemory</a></li><li><a href="global.html#endLoop">endLoop</a></li><li><a href="global.html#incrementPointer">incrementPointer</a></li><li><a href="global.html#incrementValue">incrementValue</a></li><li><a href="global.html#initGUI">initGUI</a></li><li><a href="global.html#initInterpreter">initInterpreter</a></li><li><a href="global.html#initVisualizer">initVisualizer</a></li><li><a href="global.html#inputCommand">inputCommand</a></li><li><a href="global.html#loadFont">loadFont</a></li><li><a href="global.html#loopsToString">loopsToString</a></li><li><a href="global.html#memoryToString">memoryToString</a></li><li><a href="global.html#nextCommand">nextCommand</a></li><li><a href="global.html#outputCommand">outputCommand</a></li><li><a href="global.html#render">render</a></li><li><a href="global.html#runCode">runCode</a></li><li><a href="global.html#runCommand">runCommand</a></li><li><a href="global.html#setCamera">setCamera</a></li><li><a href="global.html#setRenderer">setRenderer</a></li><li><a href="global.html#setScene">setScene</a></li><li><a href="global.html#startLoop">startLoop</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BrainfuckInterpreter.html">BrainfuckInterpreter</a></li><li><a href="Loop.html">Loop</a></li><li><a href="MemoryCell.html">MemoryCell</a></li></ul><h3>Global</h3><ul><li><a href="global.html#animate">animate</a></li><li><a href="global.html#initVisualizer">initVisualizer</a></li><li><a href="global.html#render">render</a></li><li><a href="global.html#setCamera">setCamera</a></li><li><a href="global.html#setRenderer">setRenderer</a></li><li><a href="global.html#setScene">setScene</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 15 2017 19:29:41 GMT-0500 (CDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 15 2017 21:25:40 GMT-0500 (CDT)
 </footer>
 
 <script> prettyPrint(); </script>
