@@ -3,14 +3,26 @@ let spaceBetweenCells = 50;
 let textSpace = 90;
 let textSize = 13;
 
+/**
+ * Class to manage the cells of memory of the program execution.
+ */
 class MemoryCell {
 
+    /**
+     * Constructor for a new MemoryCell object.
+     * 
+     * @param {int} value Initial value for the cell
+     * @param {Font} font Font for drawing the value
+     */
     constructor(value, font) {
         this.value = value;
         this.addCube();
         this.addText(font);
     }
 
+    /**
+     * Creates a cube mesh and adds it to the cell for it to be updated and drawn later.
+     */
     addCube() {
         var geometry = new THREE.BoxBufferGeometry( cellSize, cellSize, cellSize );
         this.object = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { 
@@ -24,6 +36,11 @@ class MemoryCell {
         scene.add(this.object);
     }
 
+    /**
+     * Create a text mesh for drawing the value of the cell and adds it in the scene.
+     * 
+     * @param {Font} font 
+     */
     addText(font) {
         var textMaterial = new THREE.MeshPhongMaterial( { color: 0x0033ff, specular: 0x555555, shininess: 30 } );
         var textGeometry = new THREE.TextGeometry(this.value, {
@@ -43,6 +60,14 @@ class MemoryCell {
         scene.add(this.textMesh);
     }
 
+    /**
+     * Draw the cell in the scene with the corresponding coordinates according to the
+     * cell index and the current pointer index.
+     * 
+     * @param {int} idx Index of the cell
+     * @param {int} currentCellIdx Index of the current pointer
+     * @param {Font} font Font to draw the cell value
+     */
     draw(idx, currentCellIdx, font) {
         if (idx == currentCellIdx) {
             this.object.material.color.setHex(0xff0000);

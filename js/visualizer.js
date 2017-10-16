@@ -1,3 +1,8 @@
+/**
+ * @file
+ * This file provides a script to set the graphic interface for a three.js visualization in the canvas.
+ */
+
 var scene, camera, renderer;
 var geometry, material, mesh;
 var objects;

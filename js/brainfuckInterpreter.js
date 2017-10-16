@@ -1,3 +1,8 @@
+/**
+ * @file
+ * This file provides a script to interpret a Brainfuck program.
+ */
+
 var memory = [];
 var currentCellIdx = 0;
 var commands = "";
