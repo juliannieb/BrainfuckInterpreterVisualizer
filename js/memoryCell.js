@@ -33,7 +33,7 @@ class MemoryCell {
         this.object.position.x = 0;
         this.object.position.y = 0;
         this.object.position.z = 0;
-        scene.add(this.object);
+        visualizer.scene.add(this.object);
     }
 
     /**
@@ -57,7 +57,7 @@ class MemoryCell {
         this.textMesh.position.x = this.object.position.x;
         this.textMesh.position.y = this.object.position.y + textSpace;
         this.textMesh.position.z = this.object.position.z;
-        scene.add(this.textMesh);
+        visualizer.scene.add(this.textMesh);
     }
 
     /**
@@ -79,7 +79,7 @@ class MemoryCell {
         this.object.position.y = 0;
         this.object.position.z = 0;
 
-        scene.remove(this.textMesh);
+        visualizer.scene.remove(this.textMesh);
         this.addText(font);
     }
 

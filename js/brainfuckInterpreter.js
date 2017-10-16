@@ -1,6 +1,6 @@
 /**
  * @file
- * This file provides a script to interpret a Brainfuck program.
+ * This file provides a class and a script to interpret a Brainfuck program.
  */
 
  /**
@@ -11,8 +11,10 @@ class BrainfuckInterpreter {
     /**
      * Constructor for a Brainfuck Interpreter
      */
-    constructor() {
+    constructor(font) {
+        this.textFont = font;
         this.initInterpreter();
+        this.addOnKeyPressedListener();
     }
 
     /**
@@ -53,25 +55,12 @@ class BrainfuckInterpreter {
     }
 
     /**
-     * Load font asynchronous for drawing cell values.
-     * 
-     * @param {string} url 
-     */
-    loadFont(url) {
-        var loader = new THREE.FontLoader();
-        let interpreter = this;
-        loader.load(url, function ( font ) {
-            interpreter.textFont = font;
-        });
-    }
-
-    /**
      * Remove every element in the canvas.
      */
     clearCanvas() {
-        while (scene.children.length)
+        while (visualizer.scene.children.length)
         {
-            scene.remove(scene.children[0]);
+            visualizer.scene.remove(visualizer.scene.children[0]);
         }
     }
 
@@ -370,21 +359,20 @@ class BrainfuckInterpreter {
         for (var i = 0; i < this.memory.length; i++) {
             this.memory[i].draw(i, this.currentCellIdx, this.textFont);
         }
-        render();
+        visualizer.render();
     }
 
 }
 
 
-
-
+var interpreter;
 
 $( document ).ready(function(){
-    let interpreter = new BrainfuckInterpreter();
-    console.log(interpreter);
-    document.getElementById("btnRun").onclick = function() { interpreter.runCode(RunningMethodEnum.RUN); };
-    document.getElementById("btnRunVisualize").onclick = function() { interpreter.runCode(RunningMethodEnum.RUN_VISUALIZE); };
-    document.getElementById("btnVisualize").onclick = function() { interpreter.runCode(RunningMethodEnum.VISUALIZE); };
-    interpreter.addOnKeyPressedListener();
-    interpreter.loadFont("https://juliannieb.github.io/BrainfuckInterpreterVisualizer/fonts/helvetiker_regular.typeface.json");
+    var loader = new THREE.FontLoader();
+    loader.load("https://juliannieb.github.io/BrainfuckInterpreterVisualizer/fonts/helvetiker_regular.typeface.json", function ( font ) {
+        interpreter = new BrainfuckInterpreter(font);
+        document.getElementById("btnRun").onclick = function() { interpreter.runCode(RunningMethodEnum.RUN); };
+        document.getElementById("btnRunVisualize").onclick = function() { interpreter.runCode(RunningMethodEnum.RUN_VISUALIZE); };
+        document.getElementById("btnVisualize").onclick = function() { interpreter.runCode(RunningMethodEnum.VISUALIZE); };
+    });
 })
