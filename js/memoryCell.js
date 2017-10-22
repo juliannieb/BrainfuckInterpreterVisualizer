@@ -21,8 +21,6 @@ class MemoryCell {
      */
     constructor(value, font) {
         this.value = value;
-        this.addCube();
-        this.addText(font);
     }
 
     /**
@@ -74,6 +72,9 @@ class MemoryCell {
      * @param {Font} font - Font to draw the cell value
      */
     draw(idx, currentCellIdx, font) {
+        if (this.cube == undefined) {
+            this.addCube();
+        }
         if (idx == currentCellIdx) {
             this.cube.material.color.setHex(0xff0000);
         }
