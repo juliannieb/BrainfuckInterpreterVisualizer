@@ -30,15 +30,15 @@ class MemoryCell {
      */
     addCube() {
         var geometry = new THREE.BoxBufferGeometry( cellSize, cellSize, cellSize );
-        this.object = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { 
+        this.cube = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { 
             //color: Math.random() * 0xffffff 
             color: 0x777777,
             wireframe: true
         } ) );
-        this.object.position.x = 0;
-        this.object.position.y = 0;
-        this.object.position.z = 0;
-        visualizer.scene.add(this.object);
+        this.cube.position.x = 0;
+        this.cube.position.y = 0;
+        this.cube.position.z = 0;
+        visualizer.scene.add(this.cube);
     }
 
     /**
@@ -59,9 +59,9 @@ class MemoryCell {
             bevelSegments: 5
         } );
         this.textMesh = new THREE.Mesh( textGeometry, textMaterial );
-        this.textMesh.position.x = this.object.position.x;
-        this.textMesh.position.y = this.object.position.y + textSpace;
-        this.textMesh.position.z = this.object.position.z;
+        this.textMesh.position.x = this.cube.position.x;
+        this.textMesh.position.y = this.cube.position.y + textSpace;
+        this.textMesh.position.z = this.cube.position.z;
         visualizer.scene.add(this.textMesh);
     }
 
@@ -75,14 +75,14 @@ class MemoryCell {
      */
     draw(idx, currentCellIdx, font) {
         if (idx == currentCellIdx) {
-            this.object.material.color.setHex(0xff0000);
+            this.cube.material.color.setHex(0xff0000);
         }
         else {
-            this.object.material.color.setHex(0x777777);
+            this.cube.material.color.setHex(0x777777);
         }
-        this.object.position.x = 0 + ((cellSize + spaceBetweenCells) * (idx - currentCellIdx));
-        this.object.position.y = 0;
-        this.object.position.z = 0;
+        this.cube.position.x = 0 + ((cellSize + spaceBetweenCells) * (idx - currentCellIdx));
+        this.cube.position.y = 0;
+        this.cube.position.z = 0;
 
         visualizer.scene.remove(this.textMesh);
         this.addText(font);
