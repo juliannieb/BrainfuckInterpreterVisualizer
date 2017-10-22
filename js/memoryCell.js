@@ -1,3 +1,8 @@
+/**
+ * @file
+ * This file provides a class to represent a memory cell in the program.
+ */
+
 let cellSize = 90;
 let spaceBetweenCells = 50;
 let textSpace = 90;
