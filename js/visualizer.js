@@ -63,12 +63,3 @@ class Visualizer {
         this.renderer.render(this.scene, this.camera);
     }
 }
-
-
-var visualizer;
-
-$( document ).ready(function(){
-    visualizer = new Visualizer();
-    visualizer.initVisualizer();
-    visualizer.render();
-})
