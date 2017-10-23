@@ -14,7 +14,6 @@ class BrainfuckInterpreter {
     constructor(font) {
         this.textFont = font;
         this.initInterpreter();
-        this.addOnKeyPressedListener();
     }
 
     /**
@@ -300,26 +299,6 @@ class BrainfuckInterpreter {
             this.keyPressedListenerActive = true;
             this.commands = "";
         }
-    }
-
-    /**
-     * Add a listener for the keyboard when the runningMethod is VISUALIZE to run the program
-     * in real time.
-     */
-    addOnKeyPressedListener() {
-        let interpreter = this;
-        $(document).keypress(function(event){
-            if (interpreter.keyPressedListenerActive) {
-                event.preventDefault();
-                if (event.keyCode == ENTER_KEY_CODE) {
-                    interpreter.keyPressedListenerActive = false;
-                    return;
-                }
-                // alert(String.fromCharCode(event.which));
-                interpreter.commands = interpreter.commands + String.fromCharCode(event.which);
-                interpreter.nextCommand(RunningMethodEnum.VISUALIZE);
-            }
-        });
     }
 
     /**
